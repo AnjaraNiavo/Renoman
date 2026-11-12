@@ -141,14 +141,15 @@ export default function LoginScreen() {
           </Text>
         </View>
 
-        <Pressable
-          style={styles.homeIndicator}
-          onPress={() => router.replace("/home")}
-          hitSlop={16}
-          accessibilityRole="button"
-          accessibilityLabel="Retour à l’accueil"
-        />
       </View>
+
+      <Pressable
+        style={styles.homeIndicator}
+        onPress={() => router.replace("/home")}
+        hitSlop={16}
+        accessibilityRole="button"
+        accessibilityLabel="Retour à l’accueil"
+      />
     </View>
   );
 }
@@ -353,7 +354,7 @@ const styles = StyleSheet.create({
 
   homeIndicator: {
     position: "absolute",
-    top: 590,
+    bottom: 8,
     alignSelf: "center",
     width: 134,
     height: 5,

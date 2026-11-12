@@ -94,26 +94,32 @@ export default function TutorialScreen() {
           </View>
 
           {/* Nouvelle soumission */}
-          <Pressable
-            style={[styles.newSubmission, { width: headerContentWidth }]}
-            onPress={() => handleAction("Nouvelle soumission")}
+          <View
+            style={[
+              styles.highlightTarget,
+              { width: tutorialHighlightWidth },
+            ]}
           >
-            <Image
-              source={require("../../../assets/icone/Plus.png")}
-              style={styles.plusIcon}
-              resizeMode="contain"
-            />
+            <Pressable
+              style={[styles.newSubmission, { width: headerContentWidth }]}
+              onPress={() => handleAction("Nouvelle soumission")}
+            >
+              <View style={styles.plusIcon} accessible={false}>
+                <View style={styles.submissionPlusHorizontal} />
+                <View style={styles.submissionPlusVertical} />
+              </View>
 
-            <View style={styles.submissionText}>
-              <Text style={styles.submissionTitle}>
-                Nouvelle soumission
-              </Text>
+              <View style={styles.submissionText}>
+                <Text style={styles.submissionTitle}>
+                  Nouvelle soumission
+                </Text>
 
-              <Text style={styles.submissionSubtitle}>
-                Client - Travail - Quantité
-              </Text>
-            </View>
-          </Pressable>
+                <Text style={styles.submissionSubtitle}>
+                  Client - Travail - Quantité
+                </Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
 
         {/* RACCOURCIS */}
@@ -253,7 +259,10 @@ export default function TutorialScreen() {
               style={[
                 styles.tutorialDimmer,
                 styles.sideDimmer,
-                { width: (windowWidth - tutorialHighlightWidth) / 2 },
+                {
+                  width: (windowWidth - tutorialHighlightWidth) / 2,
+                  left: 0,
+                },
               ]}
             />
             <View
@@ -274,12 +283,12 @@ export default function TutorialScreen() {
               ]}
             />
 
-            {/* Mise en évidence du bouton */}
             <View
               style={[
                 styles.highlightBorder,
                 { width: tutorialHighlightWidth },
               ]}
+              pointerEvents="none"
             />
 
             <View style={styles.tutorialArrow} />
@@ -294,9 +303,15 @@ export default function TutorialScreen() {
                 Commencez ici
             </Text>
 
-            <Text style={styles.tutorialDescription}>
-                Touchez ce bouton pour faire votre première
-                soumission. Ça prend moins de 60 secondes.
+            <Text
+              style={[
+                styles.tutorialDescription,
+                { width: Math.min(322, tutorialCardWidth - 48) },
+              ]}
+            >
+                Touchez ce bouton pour
+                faire votre première soumission.
+                Ça prend moins de 60 secondes.
             </Text>
 
             <View style={styles.tutorialActions}>
@@ -423,9 +438,6 @@ const styles = StyleSheet.create({
   },
 
   newSubmission: {
-    position: "absolute",
-    top: 226,
-    left: 16,
     height: 100,
     backgroundColor: "#FD9301",
     borderRadius: 28,
@@ -437,16 +449,46 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
 
+  highlightTarget: {
+    position: "absolute",
+    top: 220,
+    alignSelf: "center",
+    height: 112,
+    backgroundColor: "transparent",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2,
+  },
+
   plusIcon: {
     width: 56,
     height: 56,
     borderRadius: 999,
     backgroundColor: COLORS.white,
     marginRight: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  submissionPlusHorizontal: {
+    position: "absolute",
+    width: 22,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: "#FD9301",
+  },
+
+  submissionPlusVertical: {
+    position: "absolute",
+    width: 2,
+    height: 22,
+    borderRadius: 1,
+    backgroundColor: "#FD9301",
   },
 
   submissionText: {
     flex: 1,
+    backgroundColor: "transparent",
   },
 
   submissionTitle: {
@@ -488,7 +530,7 @@ const styles = StyleSheet.create({
   },
 
   quickIcon: {
-    height: 22,
+    height: 20,
   },
 
   newClientIcon: {
@@ -735,6 +777,20 @@ bottomDimmer: {
   bottom: 0,
 },
 
+tutorialArrow: {
+  position: "absolute",
+  top: 350,
+  alignSelf: "center",
+  width: 0,
+  height: 0,
+  borderLeftWidth: 14,
+  borderRightWidth: 14,
+  borderBottomWidth: 16,
+  borderLeftColor: "transparent",
+  borderRightColor: "transparent",
+  borderBottomColor: "#FFFFFF",
+},
+
 highlightBorder: {
   position: "absolute",
   top: 220,
@@ -746,20 +802,6 @@ highlightBorder: {
   backgroundColor: "transparent",
 },
 
-tutorialArrow: {
-  position: "absolute",
-  top: 350,
-  alignSelf: "center",
-  width: 0,
-  height: 0,
-  borderLeftWidth: 14,
-  borderRightWidth: 14,
-  borderTopWidth: 16,
-  borderLeftColor: "transparent",
-  borderRightColor: "transparent",
-  borderTopColor: "#FFFFFF",
-},
-
 tutorialCard: {
   position: "absolute",
   top: 365,
@@ -767,53 +809,91 @@ tutorialCard: {
   height: 196,
   backgroundColor: "#FFFFFF",
   borderRadius: 28,
-  padding: 17,
   elevation: 15,
 },
 
 stepLabel: {
-  color: "#D38A19",
-  fontSize: 10,
-  fontWeight: "bold",
-  marginBottom: 7,
+  position: "absolute",
+  top: 24,
+  left: 24,
+  width: 98,
+  height: 15,
+  fontFamily: "Onest",
+  color: "#B86A00",
+  fontSize: 12,
+  fontWeight: "700",
+  lineHeight: 12,
+  letterSpacing: 0.72,
 },
 
 tutorialTitle: {
-  color: "#172033",
-  fontSize: 19,
-  fontWeight: "bold",
+  position: "absolute",
+  top: 46,
+  left: 24,
+  width: 167,
+  height: 31,
+  fontFamily: "Onest",
+  color: "#101828",
+  fontSize: 24,
+  fontWeight: "700",
+  lineHeight: 24,
+  letterSpacing: -0.48,
 },
 
 tutorialDescription: {
-  color: "#687080",
-  fontSize: 12,
-  lineHeight: 18,
-  marginTop: 7,
+  position: "absolute",
+  top: 82,
+  left: 24,
+  height: 42,
+  fontFamily: "OnestRegular",
+  color: "#475467",
+  fontSize: 15,
+  fontWeight: "400",
+  lineHeight: 21,
+  letterSpacing: 0,
 },
 
 tutorialActions: {
+  position: "absolute",
+  top: 136,
+  left: 24,
+  right: 24,
+  height: 44,
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
-  marginTop: 18,
 },
 
 skipText: {
-  color: "#626B78",
-  fontSize: 12,
+  width: 48,
+  height: 19,
+  fontFamily: "OnestSemiBold",
+  color: "#101828",
+  fontSize: 15,
+  fontWeight: "600",
+  lineHeight: 15,
+  letterSpacing: 0,
 },
 
 understoodButton: {
-  backgroundColor: "#FF9900",
-  paddingHorizontal: 25,
-  paddingVertical: 10,
-  borderRadius: 20,
+  width: 130,
+  height: 44,
+  backgroundColor: "#FD9301",
+  borderRadius: 999,
+  alignItems: "center",
+  justifyContent: "center",
 },
 
 understoodText: {
+  width: 59,
+  height: 19,
+  fontFamily: "OnestSemiBold",
   color: "#FFFFFF",
-  fontSize: 12,
-  fontWeight: "bold",
+  fontSize: 15,
+  fontWeight: "600",
+  lineHeight: 15,
+  letterSpacing: 0,
+  textAlign: "center",
 },
 
 
