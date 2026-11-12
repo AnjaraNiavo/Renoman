@@ -260,8 +260,8 @@ export default function TutorialScreen() {
                 styles.tutorialDimmer,
                 styles.sideDimmer,
                 {
-                  width: (windowWidth - tutorialHighlightWidth) / 2,
                   left: 0,
+                  width: (windowWidth - tutorialHighlightWidth) / 2,
                 },
               ]}
             />
