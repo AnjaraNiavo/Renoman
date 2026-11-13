@@ -1,5 +1,6 @@
 
 import React, {useState} from "react";
+import { useRouter } from "expo-router";
 
 import {
   View,
@@ -24,7 +25,7 @@ import {
 import { COLORS } from "../constants/color";
 
 export default function HomeScreen() {
-
+  const router = useRouter();
   const [showTutorial, setShowTutorial] = useState(true);
   const { width: windowWidth } = useWindowDimensions();
   const headerContentWidth = Math.min(370, windowWidth - 32);
@@ -239,7 +240,13 @@ export default function HomeScreen() {
 
 
         
-        <View style={styles.homeIndicator} pointerEvents="none" />
+      <Pressable
+        style={styles.homeIndicator}
+        onPress={() => router.push("/tutorial")}
+        hitSlop={16}
+        accessibilityRole="button"
+        accessibilityLabel="Ouvrir le tutoriel"
+      />
     </View>
   );
 }

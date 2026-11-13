@@ -359,6 +359,8 @@ const styles = StyleSheet.create({
     width: 134,
     height: 5,
     borderRadius: 3,
-    backgroundColor: "#101828",
+    backgroundColor: COLORS.white,
+    zIndex: 10,
+    elevation: 10,
   },
 });

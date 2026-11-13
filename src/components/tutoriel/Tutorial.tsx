@@ -12,6 +12,7 @@ import {
   Modal,
   useWindowDimensions,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   Onest_400Regular,
@@ -25,6 +26,7 @@ import { COLORS } from "../../constants/color";
 
 export default function TutorialScreen() {
 
+  const router = useRouter();
   const [showTutorial, setShowTutorial] = useState(true);
   const { width: windowWidth } = useWindowDimensions();
   const headerContentWidth = Math.min(370, windowWidth - 32);
@@ -325,7 +327,7 @@ export default function TutorialScreen() {
 
                 <Pressable
                 style={styles.understoodButton}
-                onPress={() => setShowTutorial(false)}
+                onPress={() => router.push("/tutorial2")}
                 >
                 <Text style={styles.understoodText}>
                     Compris
