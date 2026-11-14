@@ -10,6 +10,7 @@ import {
   useWindowDimensions,
   Alert,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   Onest_400Regular,
@@ -21,6 +22,7 @@ import {
 import { COLORS } from "../../constants/color";
 
 export default function Tutorial2() {
+  const router = useRouter();
   const { width: windowWidth } = useWindowDimensions();
   const headerContentWidth = Math.min(370, windowWidth - 32);
   const navScale = headerContentWidth / 370;
@@ -222,6 +224,14 @@ export default function Tutorial2() {
           <Text style={[styles.navText, styles.pipelineNavText]}>Pipeline</Text>
         </Pressable>
       </View>
+
+      <Pressable
+        style={styles.homeIndicator}
+        onPress={() => router.push("/ficheclient")}
+        hitSlop={16}
+        accessibilityRole="button"
+        accessibilityLabel="Ouvrir la fiche client"
+      />
     </View>
   );
 }
@@ -553,5 +563,15 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 1,
     backgroundColor: COLORS.white,
+  },
+
+  homeIndicator: {
+    position: "absolute",
+    bottom: 8,
+    alignSelf: "center",
+    width: 134,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: "#101828",
   },
 });
