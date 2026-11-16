@@ -10,6 +10,7 @@ import {
   Alert,
   useWindowDimensions,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   Onest_400Regular,
@@ -21,6 +22,7 @@ import {
 import { COLORS } from "../../constants/color";
 
 export default function FicheClient() {
+  const router = useRouter();
   const { width: windowWidth } = useWindowDimensions();
   const contentWidth = Math.min(370, windowWidth - 32);
   const actionGap = contentWidth < 350 ? 8 : 14;
@@ -214,7 +216,13 @@ export default function FicheClient() {
 
       </ScrollView>
 
-      <View style={styles.homeIndicator} pointerEvents="none" />
+      <Pressable
+        style={styles.homeIndicator}
+        onPress={() => router.push("/pourqui")}
+        hitSlop={16}
+        accessibilityRole="button"
+        accessibilityLabel="Ouvrir l'écran Pour qui"
+      />
     </View>
   );
 }
