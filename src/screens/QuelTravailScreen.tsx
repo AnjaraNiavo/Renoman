@@ -178,9 +178,14 @@ export default function QuelTravailScreen() {
       </ScrollView>
 
       {/* HOME INDICATOR */}
-      <View style={styles.homeIndicatorContainer}>
+      <Pressable
+        style={styles.homeIndicatorContainer}
+        onPress={() => router.push("/prixmanuel")}
+        accessibilityRole="button"
+        accessibilityLabel="Ouvrir les prix manuels"
+      >
         <View style={styles.homeIndicator} />
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -213,6 +218,8 @@ const styles = StyleSheet.create({
   backIcon: {
     width: 24,
     height: 24,
+    opacity: 1,
+    transform: [{ rotate: "0deg" }],
   },
 
   stepText: {
