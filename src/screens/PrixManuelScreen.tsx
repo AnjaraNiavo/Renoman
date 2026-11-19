@@ -35,6 +35,7 @@ type PrixManuelData = {
 type Props = {
   onBack?: () => void;
   onContinue?: (data: PrixManuelData) => void;
+  onHomeIndicator?: (data: PrixManuelData) => void;
 };
 
 const CATEGORIES: Category[] = [
@@ -49,6 +50,7 @@ const UNITS: Unit[] = ["pi²", "pi lin.", "heure", "unité"];
 export default function PrixManuelScreen({
   onBack,
   onContinue,
+  onHomeIndicator,
 }: Props) {
   const [name, setName] = useState("Caissons");
   const [category, setCategory] = useState<Category>("Caissons");
@@ -83,26 +85,31 @@ export default function PrixManuelScreen({
     setPrice(numbers);
   };
 
-  const handleContinue = () => {
+  const getPrixManuelData = () => {
     const numericPrice = Number(price);
 
     if (!name.trim()) {
       Alert.alert("Nom manquant", "Veuillez nommer votre forfait.");
-      return;
+      return null;
     }
 
     if (!price || numericPrice <= 0) {
       Alert.alert("Prix invalide", "Veuillez saisir un prix valide.");
-      return;
+      return null;
     }
 
-    const data: PrixManuelData = {
+    return {
       name: name.trim(),
       category,
       unit,
       price,
       saveToPackages,
     };
+  };
+
+  const handleContinue = () => {
+    const data = getPrixManuelData();
+    if (!data) return;
 
     if (onContinue) {
       onContinue(data);
@@ -112,6 +119,16 @@ export default function PrixManuelScreen({
         `${data.name} : ${formatPrice(data.price)} $ / ${data.unit}`
       );
     }
+  };
+
+  const handleHomeIndicator = () => {
+    if (!onHomeIndicator) {
+      handleContinue();
+      return;
+    }
+
+    const data = getPrixManuelData();
+    if (data) onHomeIndicator(data);
   };
 
   return (
@@ -299,9 +316,9 @@ export default function PrixManuelScreen({
       {/* HOME INDICATOR */}
       <Pressable
         style={styles.homeIndicatorContainer}
-        onPress={handleContinue}
+        onPress={handleHomeIndicator}
         accessibilityRole="button"
-        accessibilityLabel="Continuer vers le calcul de quantité"
+        accessibilityLabel="Afficher le récapitulatif de la soumission"
       >
         <View style={styles.homeIndicator} />
       </Pressable>

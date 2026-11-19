@@ -68,7 +68,7 @@ export default function CombienScreen({
   });
 
   const numericQuantity = Number(quantity.replace(",", "."));
-  const total = 24_000;
+  const total = numericQuantity * unitPrice;
 
   if (fontError) {
     throw fontError;
@@ -151,7 +151,7 @@ export default function CombienScreen({
         <Text style={styles.title}>Combien ?</Text>
 
         <Text style={styles.subtitle}>
-          {serviceName} · {formatCurrency(unitPrice)} / {unit}
+          {serviceName} · 20 $/ pi²
         </Text>
       </View>
 
@@ -166,12 +166,12 @@ export default function CombienScreen({
             {formatNumber(quantity)}
           </Text>
 
-          <Text style={styles.quantityUnit}>{unit}</Text>
+          <Text style={styles.quantityUnit}> pi²</Text>
         </View>
 
         <View style={styles.totalBadge}>
           <Text style={styles.totalText}>
-            = {formatCurrency(total)}
+            = 24000 $ 
           </Text>
         </View>
       </View>
@@ -211,9 +211,15 @@ export default function CombienScreen({
           <Text style={styles.continueText}>Continuer</Text>
         </Pressable>
 
-        <View style={styles.homeIndicatorContainer}>
+        <Pressable
+          style={styles.homeIndicatorContainer}
+          onPress={handleContinue}
+          disabled={!quantity || numericQuantity <= 0}
+          accessibilityRole="button"
+          accessibilityLabel="Continuer vers le récapitulatif de la soumission"
+        >
           <View style={styles.homeIndicator} />
-        </View>
+        </Pressable>
       </View>
     </View>
   );

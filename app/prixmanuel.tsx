@@ -12,6 +12,17 @@ export default function App() {
           pathname: "/combien",
           params: {
             serviceName: data.name,
+            unit: data.unit,
+            unitPrice: data.price,
+          },
+        })
+      }
+      onHomeIndicator={(data) =>
+        router.push({
+          pathname: "/combien",
+          params: {
+            serviceName: data.name,
+            unit: data.unit,
             unitPrice: data.price,
           },
         })
