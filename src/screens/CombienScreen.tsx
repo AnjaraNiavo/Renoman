@@ -14,6 +14,7 @@ import {
   Onest_700Bold,
   useFonts,
 } from "@expo-google-fonts/onest";
+import { useRouter } from "expo-router";
 import { formatCurrency } from "../utils/soumission";
 
 type CombienData = {
@@ -58,6 +59,7 @@ export default function CombienScreen({
   unit = "pi²",
   unitPrice = 20,
 }: Props) {
+  const router = useRouter();
   const [quantity, setQuantity] = useState("0");
   const [fontsLoaded, fontError] = useFonts({
     OnestRegular: Onest_400Regular,
@@ -224,10 +226,9 @@ export default function CombienScreen({
 
         <Pressable
           style={styles.homeIndicatorContainer}
-          onPress={handleContinue}
-          disabled={!quantity || numericQuantity <= 0}
+          onPress={() => router.replace("/")}
           accessibilityRole="button"
-          accessibilityLabel="Continuer vers le récapitulatif de la soumission"
+          accessibilityLabel="Aller à la page de bienvenue"
         >
           <View style={styles.homeIndicator} />
         </Pressable>

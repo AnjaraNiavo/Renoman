@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   Alert,
   useWindowDimensions,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   Onest_400Regular,
@@ -21,38 +21,40 @@ import {
 } from "@expo-google-fonts/onest";
 
 import { COLORS } from "../constants/color";
-
-type Client = {
-  id: number;
-  initials: string;
-  name: string;
-  email: string;
-};
+import { lireClientsLocaux, type Client } from "../data/clients";
 
 const clients: Client[] = [
   {
-    id: 1,
+    id: "demo-1",
     initials: "MG",
     name: "Marie Gagnon",
     email: "marie.gagnon@courriel.com",
+    phone: "",
+    address: "",
   },
   {
-    id: 2,
+    id: "demo-2",
     initials: "LB",
     name: "Luc Bergeron",
     email: "luc.b@courriel.com",
+    phone: "",
+    address: "",
   },
   {
-    id: 3,
+    id: "demo-3",
     initials: "SL",
     name: "Sophie Lavoie",
     email: "slavoie@courriel.com",
+    phone: "",
+    address: "",
   },
   {
-    id: 4,
+    id: "demo-4",
     initials: "GC",
     name: "Garage Côté inc.",
     email: "info@garagecote.ca",
+    phone: "",
+    address: "",
   },
 ];
 
@@ -61,7 +63,8 @@ export default function PourQuiScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const contentWidth = Math.min(370, windowWidth - 32);
   const [search, setSearch] = useState("");
-  const [selectedClient, setSelectedClient] = useState<number | null>(
+  const [localClients, setLocalClients] = useState<Client[]>([]);
+  const [selectedClient, setSelectedClient] = useState<string | null>(
     null
   );
   const [fontsLoaded, fontError] = useFonts({
@@ -70,15 +73,42 @@ export default function PourQuiScreen() {
     Onest: Onest_700Bold,
   });
 
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const loadClients = async () => {
+        try {
+          const storedClients = await lireClientsLocaux();
+          if (isActive) {
+            setLocalClients(storedClients);
+          }
+        } catch {
+          if (isActive) {
+            Alert.alert(
+              "Chargement impossible",
+              "Les clients enregistrés sur cet appareil n’ont pas pu être chargés."
+            );
+          }
+        }
+      };
+
+      void loadClients();
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
+
   const filteredClients = useMemo(() => {
     const query = search.toLowerCase().trim();
 
-    return clients.filter(
+    return [...localClients].reverse().concat(clients).filter(
       (client) =>
         client.name.toLowerCase().includes(query) ||
         client.email.toLowerCase().includes(query)
     );
-  }, [search]);
+  }, [localClients, search]);
 
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client.id);
@@ -102,13 +132,6 @@ export default function PourQuiScreen() {
     }
 
     handleSelectClient(client);
-  };
-
-  const handleNewClient = () => {
-    Alert.alert(
-      "Nouveau client",
-      "Le formulaire de création du client sera ajouté prochainement."
-    );
   };
 
   if (fontError) {
@@ -224,7 +247,7 @@ export default function PourQuiScreen() {
       <View style={styles.bottomContainer}>
         <Pressable
           style={styles.newClientButton}
-          onPress={handleNewClient}
+          onPress={() => router.push("/nouveauclient")}
           accessibilityRole="button"
           accessibilityLabel="Nouveau client"
         >
@@ -237,10 +260,10 @@ export default function PourQuiScreen() {
 
       <Pressable
         style={styles.homeIndicator}
-        onPress={handleContinueSearch}
+        onPress={() => router.replace("/")}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Continuer vers l'étape 2, Quel travail ?"
+        accessibilityLabel="Aller à la page de bienvenue"
       />
     </View>
   );

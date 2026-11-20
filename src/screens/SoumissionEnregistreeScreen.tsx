@@ -109,7 +109,13 @@ export default function SoumissionEnregistreeScreen() {
       >
         <Text style={styles.homeButtonText}>Retour à l’accueil</Text>
       </Pressable>
-      <View style={styles.homeIndicator} />
+      <Pressable
+        style={styles.homeIndicator}
+        onPress={() => router.replace("/")}
+        hitSlop={16}
+        accessibilityRole="button"
+        accessibilityLabel="Aller à la page de bienvenue"
+      />
     </View>
   );
 }

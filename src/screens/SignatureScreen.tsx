@@ -54,6 +54,7 @@ export default function SignatureScreen() {
     timeZone: "America/Toronto",
   });
   const [strokes, setStrokes] = useState<Stroke[]>([]);
+  const [accepted, setAccepted] = useState(true);
   const [signatureSize, setSignatureSize] = useState({ width: 0, height: 0 });
   const signaturePanResponder = useMemo(
     () =>
@@ -193,11 +194,23 @@ export default function SignatureScreen() {
         </View>
 
         <View style={styles.acceptRow}>
-          <Image
-            source={require("../../assets/icone/Case.png")}
-            style={styles.checkboxImage}
-            resizeMode="contain"
-          />
+          <Pressable
+            onPress={() => setAccepted((value) => !value)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: accepted }}
+            accessibilityLabel="J’accepte la soumission S-2026-042 et ses conditions"
+            hitSlop={8}
+          >
+            {accepted ? (
+              <Image
+                source={require("../../assets/icone/Case.png")}
+                style={styles.checkboxImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <View style={[styles.checkboxImage, styles.checkboxUnchecked]} />
+            )}
+          </Pressable>
           <Text style={[styles.acceptText, { width: contentWidth - 112 }]}>
             J’accepte la soumission S-2026-042{"\n"}et ses conditions.
           </Text>
@@ -221,10 +234,10 @@ export default function SignatureScreen() {
       </Pressable>
       <Pressable
         style={styles.homeIndicator}
-        onPress={() => router.push("/envoyee")}
+        onPress={() => router.replace("/")}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Ouvrir la page Soumission envoyée"
+        accessibilityLabel="Aller à la page de bienvenue"
       />
     </View>
   );
@@ -336,6 +349,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   checkboxImage: { width: 26, height: 26 },
+  checkboxUnchecked: {
+    borderWidth: 2,
+    borderColor: "#FD9301",
+    borderRadius: 6,
+  },
   acceptText: {
     height: 42,
     color: "#101828",

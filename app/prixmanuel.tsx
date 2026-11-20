@@ -25,7 +25,7 @@ export default function App() {
           },
         })
       }
-      onHomeIndicator={() => router.replace("/home")}
+      onHomeIndicator={() => router.replace("/")}
     />
   );
 }

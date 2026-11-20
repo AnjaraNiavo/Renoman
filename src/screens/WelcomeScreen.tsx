@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import {
   Image,
   View,
@@ -21,6 +21,7 @@ import { COLORS } from "../constants/color";
 import BuildingBackground from "@/components/BuildingBackground";
 
 export default function WelcomeScreen() {
+  const router = useRouter();
   const [fontsLoaded, fontError] = useFonts({
     OnestRegular: Onest_400Regular,
     Onest: Onest_700Bold,
@@ -87,7 +88,13 @@ export default function WelcomeScreen() {
         </Link>
       </View>
 
-      <View style={styles.homeIndicator} />
+      <Pressable
+        style={styles.homeIndicator}
+        onPress={() => router.replace("/")}
+        hitSlop={16}
+        accessibilityRole="button"
+        accessibilityLabel="Aller à la page de bienvenue"
+      />
     </View>
   );
 }

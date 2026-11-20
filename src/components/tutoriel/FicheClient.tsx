@@ -53,7 +53,9 @@ export default function FicheClient() {
       <View style={styles.header}>
         <Pressable
           style={styles.backButton}
-          onPress={() => handleAction("Retour")}
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Retour à la page précédente"
         >
           <Image
             source={require("../../../assets/icone/Flèche.png")}
@@ -218,10 +220,10 @@ export default function FicheClient() {
 
       <Pressable
         style={styles.homeIndicator}
-        onPress={() => router.push("/pourqui")}
+        onPress={() => router.replace("/")}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Ouvrir l'écran Pour qui"
+        accessibilityLabel="Aller à la page de bienvenue"
       />
     </View>
   );

@@ -8,7 +8,6 @@ import {
   Pressable,
   StyleSheet,
   StatusBar,
-  Alert,
   useWindowDimensions,
 } from "react-native";
 import {
@@ -39,13 +38,6 @@ export default function LoginScreen() {
   if (!fontsLoaded) {
     return null;
   }
-
-  const handleLogin = (method: string) => {
-    Alert.alert(
-      "Connexion",
-      `La connexion avec ${method} sera configurée prochainement.`
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -82,7 +74,7 @@ export default function LoginScreen() {
         {/* Apple */}
         <Pressable
           style={[styles.appleButton, { width: titleWidth }]}
-          onPress={() => handleLogin("Apple")}
+          onPress={() => router.push("/home")}
         >
           <Image
             source={require("../../assets/icone/apple.png")}
@@ -98,7 +90,7 @@ export default function LoginScreen() {
         {/* Google */}
         <Pressable
           style={[styles.googleButton, { width: titleWidth }]}
-          onPress={() => handleLogin("Google")}
+          onPress={() => router.push("/home")}
         >
           <Image
             source={require("../../assets/icone/google.png")}
@@ -114,7 +106,7 @@ export default function LoginScreen() {
         {/* Courriel */}
         <Pressable
           style={[styles.emailButton, { width: titleWidth }]}
-          onPress={() => handleLogin("courriel")}
+          onPress={() => router.push("/home")}
         >
           <Image
             source={require("../../assets/icone/couriel.png")}
@@ -145,10 +137,10 @@ export default function LoginScreen() {
 
       <Pressable
         style={styles.homeIndicator}
-        onPress={() => router.replace("/home")}
+        onPress={() => router.replace("/")}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Retour à l’accueil"
+        accessibilityLabel="Aller à la page de bienvenue"
       />
     </View>
   );

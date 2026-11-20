@@ -188,7 +188,7 @@ export default function Tutorial2() {
       <View style={[styles.bottomNavigation, { width: headerContentWidth }]}>
         <Pressable
           style={[styles.navItem, { left: 28 * navScale }]}
-          onPress={() => handleAction("Accueil")}
+          onPress={() => router.replace("/home")}
         >
           <Image
             source={require("../../../assets/icone/home.png")}
@@ -200,7 +200,7 @@ export default function Tutorial2() {
 
         <Pressable
           style={[styles.centerButton, { left: 153 * navScale }]}
-          onPress={() => handleAction("Nouvelle soumission")}
+          onPress={() => router.push("/pourqui")}
           accessibilityRole="button"
           accessibilityLabel="Nouvelle soumission"
         >
@@ -227,10 +227,10 @@ export default function Tutorial2() {
 
       <Pressable
         style={styles.homeIndicator}
-        onPress={() => router.push("/ficheclient")}
+        onPress={() => router.replace("/")}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Ouvrir la fiche client"
+        accessibilityLabel="Aller à la page de bienvenue"
       />
     </View>
   );

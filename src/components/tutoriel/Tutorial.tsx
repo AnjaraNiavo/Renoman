@@ -340,7 +340,13 @@ export default function TutorialScreen() {
         </Modal>
 
                 
-        <View style={styles.homeIndicator} pointerEvents="none" />
+        <Pressable
+          style={styles.homeIndicator}
+          onPress={() => router.replace("/")}
+          hitSlop={16}
+          accessibilityRole="button"
+          accessibilityLabel="Aller à la page de bienvenue"
+        />
     </View>
   );
 }

@@ -209,7 +209,7 @@ export default function HomeScreen() {
 
         <Pressable
           style={[styles.centerButton, { left: 153 * navScale }]}
-          onPress={() => handleAction("Nouvelle soumission")}
+          onPress={() => router.push("/pourqui")}
           accessibilityRole="button"
           accessibilityLabel="Nouvelle soumission"
         >
@@ -242,10 +242,10 @@ export default function HomeScreen() {
         
       <Pressable
         style={styles.homeIndicator}
-        onPress={() => router.push("/tutorial")}
+        onPress={() => router.replace("/")}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Ouvrir le tutoriel"
+        accessibilityLabel="Aller à la page de bienvenue"
       />
     </View>
   );

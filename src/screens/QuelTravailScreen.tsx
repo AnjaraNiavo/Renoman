@@ -231,14 +231,9 @@ export default function QuelTravailScreen() {
       {/* HOME INDICATOR */}
       <Pressable
         style={styles.homeIndicatorContainer}
-        onPress={() =>
-          router.push({
-            pathname: "/prixmanuel",
-            params: { clientName, clientEmail },
-          })
-        }
+        onPress={() => router.replace("/")}
         accessibilityRole="button"
-        accessibilityLabel="Ouvrir les prix manuels"
+        accessibilityLabel="Aller à la page de bienvenue"
       >
         <View style={styles.homeIndicator} />
       </Pressable>

@@ -226,10 +226,10 @@ export default function SoumissionScreen() {
       </View>
       <Pressable
         style={styles.homeIndicator}
-        onPress={goToSignature}
+        onPress={() => router.replace("/")}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Ouvrir la page de signature"
+        accessibilityLabel="Aller à la page de bienvenue"
       />
     </View>
   );

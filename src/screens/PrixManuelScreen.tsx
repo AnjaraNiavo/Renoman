@@ -20,6 +20,7 @@ import {
   Onest_700Bold,
   useFonts,
 } from "@expo-google-fonts/onest";
+import { useRouter } from "expo-router";
 
 type Category = "Caissons" | "Matériel" | "Extra" | "Main-d'œuvre";
 type Unit = "pi²" | "pi lin." | "heure" | "unité";
@@ -52,6 +53,7 @@ export default function PrixManuelScreen({
   onContinue,
   onHomeIndicator,
 }: Props) {
+  const router = useRouter();
   const [name, setName] = useState("Caissons");
   const [category, setCategory] = useState<Category>("Caissons");
   const [unit, setUnit] = useState<Unit>("unité");
@@ -123,7 +125,7 @@ export default function PrixManuelScreen({
 
   const handleHomeIndicator = () => {
     if (!onHomeIndicator) {
-      handleContinue();
+      router.replace("/");
       return;
     }
 
@@ -147,7 +149,7 @@ export default function PrixManuelScreen({
           <View style={styles.header}>
             <Pressable
               style={styles.backButton}
-              onPress={onBack ?? (() => Alert.alert("Retour"))}
+              onPress={onBack ?? (() => router.back())}
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel="Retour à l'étape précédente"
