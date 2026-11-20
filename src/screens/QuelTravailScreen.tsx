@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import type { ImageSourcePropType } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Onest_400Regular,
   Onest_600SemiBold,
@@ -19,12 +19,18 @@ import {
   useFonts,
 } from "@expo-google-fonts/onest";
 
-type WorkOption = {
+type WorkOptionBase = {
   id: string;
   title: string;
   price: string;
   image: ImageSourcePropType;
 };
+
+type WorkOption = WorkOptionBase &
+  (
+    | { isManual: true }
+    | { isManual: false; unit: string; unitPrice: number }
+  );
 
 const workOptions: WorkOption[] = [
   {
@@ -32,41 +38,67 @@ const workOptions: WorkOption[] = [
     title: "Asphalte",
     price: "20 $ / pi²",
     image: require("../../assets/icone/Panneau Asphalte.png"),
+    isManual: false,
+    unit: "pi²",
+    unitPrice: 20,
   },
   {
     id: "toiture",
     title: "Toiture",
     price: "8,50 $ / pi²",
     image: require("../../assets/icone/Panneau Toiture.png"),
+    isManual: false,
+    unit: "pi²",
+    unitPrice: 8.5,
   },
   {
     id: "beton",
     title: "Béton",
     price: "45 $ / pi lin",
     image: require("../../assets/icone/Panneau Béton.png"),
+    isManual: false,
+    unit: "pi lin.",
+    unitPrice: 45,
   },
   {
     id: "bordure",
     title: "Bordure",
     price: "38 $ / pi lin",
     image: require("../../assets/icone/Panneau Bordure.png"),
+    isManual: false,
+    unit: "pi lin.",
+    unitPrice: 38,
   },
   {
     id: "main-oeuvre",
     title: "Main-d'œuvre",
     price: "75 $ / heure",
     image: require("../../assets/icone/Panneau Main-d’œuvre.png"),
+    isManual: false,
+    unit: "heure",
+    unitPrice: 75,
   },
   {
     id: "manuel",
     title: "Prix manuel",
     price: "Votre nom, votre prix",
     image: require("../../assets/icone/Panneau Prix manuel.png"),
+    isManual: true,
   },
 ];
 
 export default function QuelTravailScreen() {
   const router = useRouter();
+  const { clientName: clientNameParam, clientEmail: clientEmailParam } =
+    useLocalSearchParams<{
+      clientName?: string | string[];
+      clientEmail?: string | string[];
+    }>();
+  const getParam = (value: string | string[] | undefined) =>
+    Array.isArray(value) ? value[0] : value;
+  const clientName = getParam(clientNameParam) ?? "Marie Gagnon";
+  const clientEmail =
+    getParam(clientEmailParam) ?? "marie.gagnon@courriel.com";
   const { width: windowWidth } = useWindowDimensions();
   const contentWidth = Math.min(370, windowWidth - 32);
   const [selectedWork, setSelectedWork] = useState("asphalte");
@@ -76,8 +108,27 @@ export default function QuelTravailScreen() {
     Onest: Onest_700Bold,
   });
 
-  const handleSelectWork = (id: string) => {
-    setSelectedWork(id);
+  const handleSelectWork = (option: WorkOption) => {
+    setSelectedWork(option.id);
+
+    if (option.isManual) {
+      router.push({
+        pathname: "/prixmanuel",
+        params: { clientName, clientEmail },
+      });
+      return;
+    }
+
+    router.push({
+      pathname: "/combien",
+      params: {
+        serviceName: option.title,
+        unit: option.unit,
+        unitPrice: String(option.unitPrice),
+        clientName,
+        clientEmail,
+      },
+    });
   };
 
   if (fontError) {
@@ -122,7 +173,7 @@ export default function QuelTravailScreen() {
         <Text style={styles.title}>Quel travail ?</Text>
 
         <Text style={[styles.subtitle, { width: contentWidth }]}>
-          Pour Marie Gagnon. Touchez un forfait ou entrez votre prix.
+          Pour {clientName}. Touchez un forfait ou entrez votre prix.
         </Text>
       </View>
 
@@ -134,12 +185,12 @@ export default function QuelTravailScreen() {
         <View style={styles.optionsGrid}>
           {workOptions.map((option) => {
             const isSelected = selectedWork === option.id;
-            const isManual = option.id === "manuel";
+            const isManual = option.isManual;
 
             return (
               <Pressable
                 key={option.id}
-                onPress={() => handleSelectWork(option.id)}
+                onPress={() => handleSelectWork(option)}
                 style={[
                   styles.optionCard,
                   isSelected && styles.selectedCard,
@@ -180,7 +231,12 @@ export default function QuelTravailScreen() {
       {/* HOME INDICATOR */}
       <Pressable
         style={styles.homeIndicatorContainer}
-        onPress={() => router.push("/prixmanuel")}
+        onPress={() =>
+          router.push({
+            pathname: "/prixmanuel",
+            params: { clientName, clientEmail },
+          })
+        }
         accessibilityRole="button"
         accessibilityLabel="Ouvrir les prix manuels"
       >

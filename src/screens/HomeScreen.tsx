@@ -224,7 +224,7 @@ export default function HomeScreen() {
             styles.navItem,
             { left: 252 * navScale },
           ]}
-          onPress={() => handleAction("Pipeline")}
+          onPress={() => router.push("/tutorial2")}
         >
           <View style={styles.pipelineNavIconClip}>
             <Image

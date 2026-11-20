@@ -75,14 +75,16 @@ export default function SoumissionEnregistreeScreen() {
             accessibilityLabel="Renoman"
           />
         </View>
-        <Text style={[styles.title, { width: contentWidth }]}>Envoyer</Text>
+        <Text style={[styles.title, { width: contentWidth }]}>Envoyée</Text>
         <Text
           style={[
             styles.subtitle,
             { width: Math.min(320, contentWidth) },
           ]}
         >
-          Marie Gagnon a reçu votre soumission de 27 594 $.
+          {signed
+            ? `La soumission de ${formatCurrency(total)} a été signée par ${clientName}.`
+            : `${clientName} a reçu votre soumission de ${formatCurrency(total)}.`}
         </Text>
 
         <View style={styles.localBadge}>

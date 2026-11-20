@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
   Image,
+  PanResponder,
   Pressable,
   ScrollView,
   StatusBar,
@@ -9,16 +10,80 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
+import Svg, { Circle, Path } from "react-native-svg";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Onest_400Regular,
   Onest_600SemiBold,
   Onest_700Bold,
   useFonts,
 } from "@expo-google-fonts/onest";
+import {
+  calculateSoumissionTotals,
+  firstParam,
+  formatCurrency,
+} from "../utils/soumission";
+
+type Point = { x: number; y: number };
+type Stroke = Point[];
 
 export default function SignatureScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    clientName?: string | string[];
+    clientEmail?: string | string[];
+    serviceName?: string | string[];
+    unit?: string | string[];
+    unitPrice?: string | string[];
+    quantity?: string | string[];
+    draftId?: string | string[];
+  }>();
+  const clientName = firstParam(params.clientName) ?? "Marie Gagnon";
+  const unitPrice = Number(firstParam(params.unitPrice) ?? "20");
+  const quantity = Number(firstParam(params.quantity) ?? "1200");
+  const totals = calculateSoumissionTotals(quantity, unitPrice);
+  const confirmSignature = () =>
+    router.push({
+      pathname: "/envoyee",
+      params: { ...params, signed: "true" },
+    });
+  const signatureDate = new Date().toLocaleDateString("fr-CA", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "America/Toronto",
+  });
+  const [strokes, setStrokes] = useState<Stroke[]>([]);
+  const [signatureSize, setSignatureSize] = useState({ width: 0, height: 0 });
+  const signaturePanResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderGrant: (event) => {
+          const point = {
+            x: event.nativeEvent.locationX,
+            y: event.nativeEvent.locationY,
+          };
+          setStrokes((current) => [...current, [point]]);
+        },
+        onPanResponderMove: (event) => {
+          const point = {
+            x: event.nativeEvent.locationX,
+            y: event.nativeEvent.locationY,
+          };
+          setStrokes((current) => {
+            if (current.length === 0) return [[point]];
+            const lastIndex = current.length - 1;
+            const next = [...current];
+            next[lastIndex] = [...next[lastIndex], point];
+            return next;
+          });
+        },
+      }),
+    []
+  );
   const { width: screenWidth } = useWindowDimensions();
   const contentWidth = Math.min(370, screenWidth - 32);
   const [fontsLoaded, fontError] = useFonts({
@@ -35,14 +100,25 @@ export default function SignatureScreen() {
       <StatusBar barStyle="dark-content" />
 
       <View style={[styles.header, { width: contentWidth }]}>
-        <View style={styles.backButton}>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Retour à la page précédente"
+        >
           <Image
             source={require("../../assets/icone/Flèche.png")}
             style={styles.backIcon}
             resizeMode="contain"
           />
-        </View>
-        <Text style={styles.clearText}>Effacer</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setStrokes([])}
+          accessibilityRole="button"
+          accessibilityLabel="Effacer la signature"
+        >
+          <Text style={styles.clearText}>Effacer</Text>
+        </Pressable>
       </View>
 
       <ScrollView
@@ -51,17 +127,69 @@ export default function SignatureScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.title}>Signez ici</Text>
-        <Text style={styles.subtitle}>Marie Gagnon · Total 27 594 $</Text>
+        <Text
+          style={styles.subtitle}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {clientName} · Total {formatCurrency(totals.total)}
+        </Text>
 
-        <View style={styles.signatureBox}>
-          <Image
-            source={require("../../assets/icone/Signature.png")}
-            style={[styles.signatureImage, { width: contentWidth - 70 }]}
-            resizeMode="contain"
-          />
+        <View
+          style={styles.signatureBox}
+          onLayout={({ nativeEvent }) =>
+            setSignatureSize({
+              width: nativeEvent.layout.width,
+              height: nativeEvent.layout.height,
+            })
+          }
+          {...signaturePanResponder.panHandlers}
+        >
           <Text style={styles.clearMark}>×</Text>
           <View style={styles.signatureBaseline} />
           <Text style={styles.signatureCaption}>Signature du client</Text>
+          {signatureSize.width > 0 && signatureSize.height > 0 && (
+            <Svg
+              width={signatureSize.width}
+              height={signatureSize.height}
+              viewBox={`0 0 ${signatureSize.width} ${signatureSize.height}`}
+              pointerEvents="none"
+              style={styles.signatureDrawing}
+            >
+              {strokes.map((stroke, index) => {
+                if (stroke.length === 1) {
+                  return (
+                    <Circle
+                      key={index}
+                      cx={stroke[0].x}
+                      cy={stroke[0].y}
+                      r={1.5}
+                      fill="#101828"
+                    />
+                  );
+                }
+
+                const path = stroke
+                  .map(
+                    (point, pointIndex) =>
+                      `${pointIndex === 0 ? "M" : "L"} ${point.x} ${point.y}`
+                  )
+                  .join(" ");
+
+                return (
+                  <Path
+                    key={index}
+                    d={path}
+                    fill="none"
+                    stroke="#101828"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                );
+              })}
+            </Svg>
+          )}
         </View>
 
         <View style={styles.acceptRow}>
@@ -76,18 +204,21 @@ export default function SignatureScreen() {
         </View>
 
         <Text style={styles.localNote}>
-          Signé le 28 oct. 2026 · Montréal
+          Signé le {signatureDate} · Montréal
         </Text>
       </ScrollView>
 
-      <View
+      <Pressable
         style={[
           styles.confirmButton,
           { width: contentWidth, left: (screenWidth - contentWidth) / 2 },
         ]}
+        onPress={confirmSignature}
+        accessibilityRole="button"
+        accessibilityLabel="Confirmer la signature et terminer la soumission"
       >
         <Text style={styles.confirmText}>Confirmer la signature</Text>
-      </View>
+      </Pressable>
       <Pressable
         style={styles.homeIndicator}
         onPress={() => router.push("/envoyee")}
@@ -158,11 +289,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginTop: -6,
   },
-  signatureImage: {
+  signatureDrawing: {
     position: "absolute",
-    top: 70,
-    left: 35,
-    height: 120,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   clearMark: {
     position: "absolute",

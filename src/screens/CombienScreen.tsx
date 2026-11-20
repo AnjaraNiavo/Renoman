@@ -14,6 +14,7 @@ import {
   Onest_700Bold,
   useFonts,
 } from "@expo-google-fonts/onest";
+import { formatCurrency } from "../utils/soumission";
 
 type CombienData = {
   quantity: number;
@@ -50,9 +51,6 @@ const formatNumber = (value: string) => {
     : formattedInteger;
 };
 
-const formatCurrency = (value: number) =>
-  `${Math.round(value).toLocaleString("fr-FR")} $`;
-
 export default function CombienScreen({
   onBack,
   onContinue,
@@ -60,7 +58,7 @@ export default function CombienScreen({
   unit = "pi²",
   unitPrice = 20,
 }: Props) {
-  const [quantity, setQuantity] = useState("1200");
+  const [quantity, setQuantity] = useState("0");
   const [fontsLoaded, fontError] = useFonts({
     OnestRegular: Onest_400Regular,
     OnestSemiBold: Onest_600SemiBold,
@@ -93,7 +91,7 @@ export default function CombienScreen({
       return;
     }
 
-    if (quantity.replace(",", "").length >= 9) return;
+    if (quantity.replace(",", "").length >= 12) return;
 
     const decimalPart = quantity.split(",")[1];
 
@@ -151,7 +149,7 @@ export default function CombienScreen({
         <Text style={styles.title}>Combien ?</Text>
 
         <Text style={styles.subtitle}>
-          {serviceName} · 20 $/ pi²
+          {serviceName} · {formatCurrency(unitPrice)} / {unit}
         </Text>
       </View>
 
@@ -162,16 +160,29 @@ export default function CombienScreen({
             style={styles.quantityValue}
             numberOfLines={1}
             adjustsFontSizeToFit
+            minimumFontScale={0.5}
           >
             {formatNumber(quantity)}
           </Text>
 
-          <Text style={styles.quantityUnit}> pi²</Text>
+          <Text
+            style={styles.quantityUnit}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.5}
+          >
+            {unit}
+          </Text>
         </View>
 
         <View style={styles.totalBadge}>
-          <Text style={styles.totalText}>
-            = 24000 $ 
+          <Text
+            style={styles.totalText}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.5}
+          >
+            = {formatCurrency(total)}
           </Text>
         </View>
       </View>
@@ -313,13 +324,17 @@ const styles = StyleSheet.create({
   },
 
   quantityRow: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     height: 66,
+    paddingHorizontal: 20,
   },
 
   quantityValue: {
+    flexShrink: 1,
+    minWidth: 0,
     fontFamily: "Onest",
     fontSize: 52,
     fontWeight: "700",
@@ -329,6 +344,7 @@ const styles = StyleSheet.create({
   },
 
   quantityUnit: {
+    flexShrink: 1,
     fontFamily: "Onest",
     fontSize: 52,
     fontWeight: "700",
@@ -340,7 +356,8 @@ const styles = StyleSheet.create({
   },
 
   totalBadge: {
-    width: 150,
+    width: "80%",
+    maxWidth: 280,
     height: 34,
     borderRadius: 999,
     backgroundColor: "#FFF4E3",
@@ -350,7 +367,7 @@ const styles = StyleSheet.create({
   },
 
   totalText: {
-    width: 90,
+    width: "100%",
     height: 22,
     fontFamily: "Onest",
     fontSize: 17,

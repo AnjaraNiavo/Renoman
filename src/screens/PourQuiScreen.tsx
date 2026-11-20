@@ -82,8 +82,26 @@ export default function PourQuiScreen() {
 
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client.id);
+    router.push({
+      pathname: "/queltravail",
+      params: {
+        clientName: client.name,
+        clientEmail: client.email,
+      },
+    });
+  };
 
-    // La navigation vers l'étape 2 sera ajoutée ensuite.
+  const handleContinueSearch = () => {
+    const client =
+      filteredClients.find((item) => item.id === selectedClient) ??
+      filteredClients[0];
+
+    if (!client) {
+      Alert.alert("Aucun client trouvé", "Choisissez un client dans la liste.");
+      return;
+    }
+
+    handleSelectClient(client);
   };
 
   const handleNewClient = () => {
@@ -149,6 +167,8 @@ export default function PourQuiScreen() {
           placeholderTextColor="#98A2B3"
           value={search}
           onChangeText={setSearch}
+          onSubmitEditing={handleContinueSearch}
+          returnKeyType="go"
           autoCapitalize="none"
         />
       </View>
@@ -217,7 +237,7 @@ export default function PourQuiScreen() {
 
       <Pressable
         style={styles.homeIndicator}
-        onPress={() => router.push("/queltravail")}
+        onPress={handleContinueSearch}
         hitSlop={16}
         accessibilityRole="button"
         accessibilityLabel="Continuer vers l'étape 2, Quel travail ?"
@@ -341,6 +361,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: "#101828",
     paddingVertical: 0,
+    outlineWidth: 0,
   },
 
   clientList: {

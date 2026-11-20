@@ -35,7 +35,7 @@ type PrixManuelData = {
 type Props = {
   onBack?: () => void;
   onContinue?: (data: PrixManuelData) => void;
-  onHomeIndicator?: (data: PrixManuelData) => void;
+  onHomeIndicator?: () => void;
 };
 
 const CATEGORIES: Category[] = [
@@ -55,8 +55,8 @@ export default function PrixManuelScreen({
   const [name, setName] = useState("Caissons");
   const [category, setCategory] = useState<Category>("Caissons");
   const [unit, setUnit] = useState<Unit>("unité");
-  const [price, setPrice] = useState("1250");
-  const [saveToPackages, setSaveToPackages] = useState(true);
+  const [price, setPrice] = useState("");
+  const [saveToPackages, setSaveToPackages] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     OnestRegular: Onest_400Regular,
     OnestMedium: Onest_500Medium,
@@ -127,8 +127,7 @@ export default function PrixManuelScreen({
       return;
     }
 
-    const data = getPrixManuelData();
-    if (data) onHomeIndicator(data);
+    onHomeIndicator();
   };
 
   return (
@@ -271,7 +270,9 @@ export default function PrixManuelScreen({
                 <Text style={styles.priceDollarText}>$</Text>
               </View>
 
-              <Text style={styles.currencyText}>/ {unit}</Text>
+              <Text style={styles.currencyText} numberOfLines={1}>
+                / {unit}
+              </Text>
             </View>
           </View>
 
@@ -559,6 +560,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.56,
     color: "#101828",
     paddingVertical: 0,
+    outlineWidth: 0,
   },
 
   priceDollarText: {
@@ -573,7 +575,7 @@ const styles = StyleSheet.create({
   },
 
   currencyText: {
-    width: 50,
+    flexShrink: 0,
     height: 20,
     fontFamily: "OnestRegular",
     fontSize: 16,

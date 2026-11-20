@@ -39,7 +39,10 @@ export const firstParam = (
 ): string | undefined => (Array.isArray(value) ? value[0] : value);
 
 export const formatCurrency = (value: number) =>
-  `${Math.round(value).toLocaleString("fr-FR")} $`;
+  `${value.toLocaleString("fr-FR", {
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2,
+  })} $`;
 
 export const calculateSoumissionTotals = (
   quantity: number,

@@ -128,7 +128,7 @@ export default function SoumissionScreen() {
       >
         <Text style={styles.title}>On envoie ?</Text>
         <Text style={styles.subtitle}>
-          Envoyez-la, ou faites signer Marie sur place.
+          Envoyez-la, ou faites signer {clientName} sur place.
         </Text>
 
         <View style={styles.clientCard}>
@@ -142,18 +142,19 @@ export default function SoumissionScreen() {
             <View>
               <Text style={styles.lineTitle}>{serviceName}</Text>
               <Text style={styles.lineDetail}>
-                1 200 pi² × 20 $
+                {quantity.toLocaleString("fr-FR")} {unit} ×{" "}
+                {formatCurrency(unitPrice)}
               </Text>
             </View>
             <Text style={styles.lineAmount}>
-              24 000 $
+              {formatCurrency(totals.subtotal)}
             </Text>
           </View>
 
           <View style={styles.taxRow}>
             <Text style={styles.taxLabel}>Taxes (TPS + TVQ)</Text>
             <Text style={styles.taxAmount}>
-              3 594 $
+              {formatCurrency(totals.tps + totals.tvq)}
             </Text>
           </View>
 
@@ -161,7 +162,7 @@ export default function SoumissionScreen() {
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Total</Text>
             <Text style={styles.totalAmount}>
-             27 594 $
+              {formatCurrency(totals.total)}
             </Text>
           </View>
         </View>

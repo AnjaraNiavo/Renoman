@@ -4,10 +4,13 @@ import CombienScreen from "@/screens/CombienScreen";
 
 export default function App() {
   const router = useRouter();
-  const { serviceName, unit, unitPrice } = useLocalSearchParams<{
+  const { serviceName, unit, unitPrice, clientName, clientEmail } =
+    useLocalSearchParams<{
     serviceName?: string | string[];
     unit?: string | string[];
     unitPrice?: string | string[];
+    clientName?: string | string[];
+    clientEmail?: string | string[];
   }>();
 
   const getParam = (value: string | string[] | undefined) =>
@@ -33,6 +36,8 @@ export default function App() {
             unit: resolvedUnit,
             unitPrice: String(resolvedUnitPrice),
             quantity: String(quantity),
+            clientName: getParam(clientName),
+            clientEmail: getParam(clientEmail),
           },
         })
       }
