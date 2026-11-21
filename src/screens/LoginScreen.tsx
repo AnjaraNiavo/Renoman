@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
   View,
@@ -8,6 +8,8 @@ import {
   Pressable,
   StyleSheet,
   StatusBar,
+  ScrollView,
+  TextInput,
   useWindowDimensions,
 } from "react-native";
 import {
@@ -18,6 +20,7 @@ import {
 } from "@expo-google-fonts/onest";
 
 import { COLORS } from "../constants/color";
+import { verifierIdentifiantsLocaux } from "../data/comptes";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -25,6 +28,10 @@ export default function LoginScreen() {
   const titleWidth = Math.min(370, windowWidth - 32);
   const accountWidth = Math.min(330, windowWidth - 40);
   const legalWidth = Math.min(320, windowWidth - 40);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [isChecking, setIsChecking] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     OnestRegular: Onest_400Regular,
     Onest: Onest_700Bold,
@@ -38,6 +45,36 @@ export default function LoginScreen() {
   if (!fontsLoaded) {
     return null;
   }
+
+  const handleEmailLogin = async () => {
+    if (isChecking) {
+      return;
+    }
+
+    if (!email.trim() || !password) {
+      setLoginError("Saisissez votre adresse e-mail et votre mot de passe.");
+      return;
+    }
+
+    setLoginError("");
+    setIsChecking(true);
+    try {
+      const isValid = await verifierIdentifiantsLocaux(email, password);
+      if (!isValid) {
+        setLoginError("Adresse e-mail ou mot de passe incorrect.");
+        setIsChecking(false);
+        return;
+      }
+
+      setIsChecking(false);
+      router.replace("/home");
+      return;
+    } catch (error) {
+      console.error("Échec de la vérification du compte local :", error);
+      setLoginError("Impossible de vérifier le compte sur cet appareil.");
+    }
+    setIsChecking(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -62,13 +99,59 @@ export default function LoginScreen() {
       </View>
 
       {/* Panneau de connexion */}
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <View style={[styles.heading, { width: titleWidth }]}>
           <Text style={[styles.title, { width: titleWidth }]}>Connexion</Text>
 
           <Text style={styles.subtitle}>
             Un seul toucher pour commencer.
           </Text>
+        </View>
+
+        <View style={[styles.credentials, { width: titleWidth }]}>
+          <TextInput
+            style={styles.credentialInput}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Adresse e-mail"
+            placeholderTextColor="#667085"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="next"
+            accessibilityLabel="Adresse e-mail"
+          />
+          <TextInput
+            style={styles.credentialInput}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Mot de passe"
+            placeholderTextColor="#667085"
+            secureTextEntry
+            returnKeyType="done"
+            accessibilityLabel="Mot de passe"
+          />
+          {loginError ? <Text style={styles.loginError}>{loginError}</Text> : null}
+          <Pressable
+            style={[styles.credentialsButton, isChecking && styles.credentialsButtonDisabled]}
+            onPress={handleEmailLogin}
+            disabled={isChecking}
+          >
+            <Text style={styles.credentialsButtonText}>
+              {isChecking ? "Vérification..." : "Se connecter"}
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.separator}>
+          <View style={styles.separatorLine} />
+          <Text style={styles.separatorText}>ou</Text>
+          <View style={styles.separatorLine} />
         </View>
 
         {/* Apple */}
@@ -119,21 +202,22 @@ export default function LoginScreen() {
           </Text>
         </Pressable>
 
-        {/* Création automatique du compte */}
-        <Text style={[styles.accountText, { width: accountWidth }]}>
-          Pas encore de compte ? Il se crée{"\n"}
-          automatiquement.
-        </Text>
+        <Pressable
+          style={[styles.accountText, { width: accountWidth }]}
+          onPress={() => router.push("/register")}
+          accessibilityRole="link"
+        >
+          <Text style={styles.accountLinkText}>Pas encore de compte ? Créez-en un</Text>
+        </Pressable>
 
         {/* Conditions d'utilisation */}
         <View style={[styles.legalContainer, { width: legalWidth }]}>
           <Text style={styles.legalText}>
-            En continuant, vous acceptez les conditions d'utilisation
+            En continuant, vous acceptez les conditions d’utilisation
             {"\n"}et la politique de confidentialité.
           </Text>
         </View>
-
-      </View>
+        </ScrollView>
 
       <Pressable
         style={styles.homeIndicator}
@@ -188,15 +272,22 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    width: 402,
+    width: "100%",
     maxWidth: "100%",
-    height: 604,
+    flex: 1,
     alignSelf: "center",
     backgroundColor: COLORS.white,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
+  },
+
+  contentContainer: {
+    width: "100%",
+    maxWidth: 402,
+    alignSelf: "center",
     paddingHorizontal: 20,
     paddingTop: 17,
+    paddingBottom: 40,
     alignItems: "center",
   },
 
@@ -224,6 +315,66 @@ const styles = StyleSheet.create({
     color: "#475467",
     top: "12px",
     left: "25px"
+  },
+
+  credentials: {
+    gap: 12,
+    marginBottom: 4,
+  },
+
+  credentialInput: {
+    minHeight: 54,
+    borderWidth: 1.5,
+    borderColor: "#D0D5DD",
+    borderRadius: 22,
+    paddingHorizontal: 16,
+    color: "#101828",
+    fontFamily: "OnestRegular",
+    fontSize: 16,
+  },
+
+  loginError: {
+    color: "#B42318",
+    fontFamily: "OnestRegular",
+    fontSize: 13,
+  },
+
+  credentialsButton: {
+    minHeight: 56,
+    borderRadius: 999,
+    backgroundColor: COLORS.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  credentialsButtonDisabled: {
+    opacity: 0.7,
+  },
+
+  credentialsButtonText: {
+    color: COLORS.white,
+    fontFamily: "OnestSemiBold",
+    fontSize: 17,
+  },
+
+  separator: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    marginVertical: 14,
+  },
+
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#D0D5DD",
+  },
+
+  separatorText: {
+    color: "#667085",
+    fontFamily: "OnestRegular",
+    fontSize: 15,
   },
 
   appleButton: {
@@ -315,22 +466,26 @@ const styles = StyleSheet.create({
   },
 
   accountText: {
-    position: "absolute",
-    top: 380,
     alignSelf: "center",
-    height: 40,
+    minHeight: 40,
+    marginTop: 18,
+    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  accountLinkText: {
     color: "#475467",
     fontFamily: "OnestRegular",
     fontSize: 14,
     lineHeight: 19.6,
-    textAlign: "center",
+    textDecorationLine: "underline",
   },
 
   legalContainer: {
-    position: "absolute",
-    top: 520,
     alignSelf: "center",
     height: 34,
+    marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
   },

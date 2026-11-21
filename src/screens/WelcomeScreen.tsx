@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Pressable,
   StatusBar,
-  Alert,
 } from "react-native";
 import {
   Onest_400Regular,
@@ -36,10 +35,6 @@ export default function WelcomeScreen() {
     return null;
   }
 
-  const handleStart = () => {
-    Alert.alert("Bienvenue", "Bienvenue sur Renoman !");
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.statusBar}>
@@ -66,7 +61,7 @@ export default function WelcomeScreen() {
 
         <Text style={styles.description}>
           Choisissez le client, le travail et le
-          quantitatif. On s'occupe du reste.
+          quantitatif. On s’occupe du reste.
         </Text>
       </View>
 
@@ -74,16 +69,16 @@ export default function WelcomeScreen() {
       <View style={styles.footer}>
         <Pressable
           style={styles.button}
-          onPress={handleStart}
+          onPress={() => router.push("/register")}
         >
           <Text style={styles.buttonText}>
-            Commencer
+            S'incrire
           </Text>
         </Pressable>
 
         <Link href="/login" asChild>
           <Pressable style={styles.loginLink} accessibilityRole="link">
-            <Text style={styles.loginText}>J'ai déjà un compte</Text>
+            <Text style={styles.loginText}>J’ai déjà un compte</Text>
           </Pressable>
         </Link>
       </View>

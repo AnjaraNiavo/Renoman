@@ -1,5 +1,5 @@
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  Keyboard,
+  Platform,
   useWindowDimensions,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -67,11 +69,26 @@ export default function PourQuiScreen() {
   const [selectedClient, setSelectedClient] = useState<string | null>(
     null
   );
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [fontsLoaded, fontError] = useFonts({
     OnestRegular: Onest_400Regular,
     OnestSemiBold: Onest_600SemiBold,
     Onest: Onest_700Bold,
   });
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", (event) => {
+      setKeyboardHeight(event.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -244,7 +261,15 @@ export default function PourQuiScreen() {
       </ScrollView>
 
       {/* NEW CLIENT BUTTON */}
-      <View style={styles.bottomContainer}>
+      <View
+        style={[
+          styles.bottomContainer,
+          Platform.OS === "android" &&
+            keyboardHeight > 0 && {
+              transform: [{ translateY: keyboardHeight }],
+            },
+        ]}
+      >
         <Pressable
           style={styles.newClientButton}
           onPress={() => router.push("/nouveauclient")}
